@@ -39,6 +39,12 @@ class User():
   Avatar: str # link to 头像
   pass
 
+# 提前准备用户头像图片 20张 可以重复使用 根据最近未使用进行选择
+class UserAvatar():
+  Name: str # 头像名称
+  Avatar: str # link to 头像图片
+  LatestUseTime: datetime.datetime # 上次使用时间
+
 # 竞赛模板
 class GameTemplate():
 
@@ -123,6 +129,12 @@ class GameTemplate():
 
   pass
 
+# 提前准备竞赛模板头像图片 10张 可以重复使用 根据最近未使用进行选择
+class GameTemplateAvatar():
+  Name: str # 竞赛模板头像名称
+  Avatar: str # link to 竞赛模板头像图片
+  LatestUseTime: datetime.datetime # 上次使用时间
+
 # 分组模板
 class TeamTemplate():
   Class: Class # 所属班级， 一个班级下又多个分组模板
@@ -131,10 +143,10 @@ class TeamTemplate():
   # 分组详情： 学生姓名， 学号，所在组名称，扮演角色
   Details: list=[
     {
-      'StudentName': '',
-      'StudentNameID': '',
-      'TeamName': '',
-      'Role': ''
+      'StudentName': '', # 学生(竞赛选手)名称
+      'StudentNameID': '', # 学生(竞赛选手)学号
+      'TeamName': '', # 学生所在团队名称
+      'Role': '' # 扮演银行还是第三方支付平台
     }
   ]
 
@@ -143,11 +155,12 @@ class TeamTemplate():
 # 单轮竞赛
 class SingleRoundGame():
   Name: str # 竞赛名称
+  Organizer: User # 竞赛组织者(老师)
   GameTemplate: GameTemplate # 竞赛用的模板
   Class: Class # 参加竞赛的班级
   TeamTemplate: TeamTemplate # 竞赛用的分组模板
-  GameStartTime: datetime.time # 竞赛开始时间， 老师开启竞赛的时间
-  GameEndTime: datetime.time # 竞赛结束时间
+  GameStartTime: datetime.datetime # 竞赛开始时间， 老师开启竞赛的时间
+  GameEndTime: datetime.datetime # 竞赛结束时间
   # 选手出牌情况
   PlayerCards: list=[
     {
@@ -158,7 +171,7 @@ class SingleRoundGame():
       'AgencyIR': 0.0075, # 设定(出牌)机构利率， 机构包括 银行 和 第三方支付平台
       'AgencyFR': 0.0025, # 设定机构费率
       'AgencyLR': 0.075, # 设定机构贷款利率，第三方支付平台没有这项
-      'IssueTime': datetime.time, # 出牌时间
+      'ShotTime': datetime.datetime, # 出牌时间
     }
   ]
   # 竞赛结果，按选手
@@ -179,11 +192,12 @@ class SingleRoundGame():
 # 多轮竞赛
 class MultiRoundGame():
   Name: str # 竞赛名称
+  Organizer: User # 竞赛组织者(老师)
   GameTemplate: GameTemplate # 竞赛用的模板
   Class: Class # 参加竞赛的班级
   TeamTemplate: TeamTemplate # 竞赛用的分组模板
-  GameStartTime: datetime.time # 竞赛开始时间， 老师开启竞赛的时间
-  GameEndTime: datetime.time # 竞赛结束时间
+  GameStartTime: datetime.datetime # 竞赛开始时间， 老师开启竞赛的时间
+  GameEndTime: datetime.datetime # 竞赛结束时间
   RoundNum: int # 回合数
   RoundDuration: int # 每回合持续时间
   # 每一轮的情况
@@ -200,7 +214,7 @@ class MultiRoundGame():
           'AgencyIR': 0.0075, # 设定(出牌)机构利率， 机构包括 银行 和 第三方支付平台
           'AgencyFR': 0.0025, # 设定机构费率
           'AgencyLR': 0.075, # 设定机构贷款利率，第三方支付平台没有这项
-          'IssueTime': datetime.time, # 出牌时间
+          'ShotTime': datetime.datetime, # 出牌时间
         }
       ],
       # 本轮结果，按选手排列
@@ -221,15 +235,117 @@ class MultiRoundGame():
 
 # 自由搏击
 class FreeBattleGame():
+  Name: str # 竞赛名称
+  Organizer: User # 竞赛组织者(老师)
+  GameTemplate: GameTemplate # 竞赛用的模板
+  Class: Class # 参加竞赛的班级
+  TeamTemplate: TeamTemplate # 竞赛用的分组模板
+  GameStartTime: datetime.datetime # 竞赛开始时间， 老师开启竞赛的时间
+  GameEndTime: datetime.datetime # 竞赛结束时间
+  RoundNum: int # 回合数
+  RoundDuration: int # 每回合持续时间
+  # 选手出牌和结果
+  Shots: list=[
+    {
+      'ShotTime': datetime.datetime, # 出牌时间
+      'WhoShot': str, # 出牌选手的学号
+      # 选手出牌情况
+      'PlayerCards': [
+        {
+          'StudentName': '', # 学生(竞赛选手)名称
+          'StudentNameID': '', # 学生(竞赛选手)学号
+          'Role': '', # 银行，还是 第三方支付平台
+          'AgencyRepresented': '', # 代表机构的名称
+          'AgencyIR': 0.0075, # 设定(出牌)机构利率， 机构包括 银行 和 第三方支付平台
+          'AgencyFR': 0.0025, # 设定机构费率
+          'AgencyLR': 0.075, # 设定机构贷款利率，第三方支付平台没有这项
+        }
+      ],
+      # 本轮结果，按选手排列
+      'GameResults': [
+        {
+          'StudentName': '', # 学生(竞赛选手)名称
+          'StudentNameID': '', # 学生(竞赛选手)学号
+          'Role': '', # 银行，还是 第三方支付平台
+          'AgencyRepresented': '', # 代表机构的名称
+          'ClientNum': 19, # 留存客户数
+          'Cash': 1341, # 现金流结余
+          'Profit': 34, # 利润
+        }
+      ]
+    }
+  ]
+
   pass
+
+# 竞赛枚举
+class GameEnum():
+  SingleRoundGame= SingleRoundGame
+  MultiRoundGame= MultiRoundGame
+  FreeBattleGame= FreeBattleGame
 
 # 竞赛评估
 class GameAssessment():
+  GameType: str # 竞赛类型： 单轮对抗SingleRound, 多轮博弈MultiRound, 自由搏击FreeBattle
+  Game: GameEnum
+  TeamScore: list=[
+    {
+      'TeamName': str, # 组名
+      'TeamAvatar': str, # link to 团队头像图片，如果有的话
+      'TeamScore': float, # 小组得分
+      'TeamMembers': [] # 小组成员名称列表
+    }
+  ]
+
   pass
 
+# 学生评价
 class StudentAssessment():
+  User: User # 学生
+  TotalWholeScore: float # 总分
+  TheoryScore: dict={
+    'TotalScore': float, # 总分
+    # 各个知识点分项得分
+    'SubitemScore': [
+      {
+        'KnowledgeSN': str, # 知识点序号， 排序用
+        'KnowledgePoint': str, # 知识点
+        'CompletionPercentage': float, # 完成度百分比
+        'Score': float, # 知识点得分
+      }
+    ]
+  }
+  GameScore: dict={
+    'TotalScore': float, # 总分
+    'SubitemScore': [
+      {
+        'GameType': str, # 竞赛类型名称
+        'CompletionNum': int, # 完成次数
+        'AvgScore': float, # 平均得分
+      }
+    ]
+  }
   pass
 
+# 成就徽章
+class AchievementBadge():
+  Name: str # 徽章名称
+  Avatar: str # link to 徽章图片
+
+# 小组评价
 class TeamAssessment():
+  Class: Class # 班级
+  TeamTemplate: TeamTemplate # 班级内的分组模板
+  TeamName: str # 小组名称
+  GameCompletionNum: int # 完成竞赛数
+  TeamAvgScore: float # 平均得分
+  GameList: list=[
+    {
+      'GameName': str, # 竞赛名称
+      'GameType': str, # 竞赛类型
+      'GameDuration': int, # 竞赛用时
+      'GameScore': float, # 竞赛得分
+    }
+  ]
   pass
 
